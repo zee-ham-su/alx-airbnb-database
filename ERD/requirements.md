@@ -3,37 +3,56 @@
 ## Entities and Attributes
 
 1. **User**
-   - `userId`: Primary Key
-   - `name`: String
-   - `email`: String, Unique
-   - `password`: String
-   - `role`: Enum (Host, Guest)
-   - `createdAt`: Timestamp
+   - `user_id`: Primary Key, UUID
+   - `first_name`: String, NOT NULL
+   - `last_name`: String, NOT NULL
+   - `email`: String, Unique, NOT NULL
+   - `password_hash`: String, NOT NULL
+   - `phone_number`: String, Optional
+   - `role`: Enum (guest, host, admin), NOT NULL
+   - `created_at`: Timestamp, DEFAULT CURRENT_TIMESTAMP
 
 2. **Property**
-   - `propertyId`: Primary Key
-   - `title`: String
-   - `description`: Text
-   - `price`: Decimal
-   - `location`: String
-   - `hostId`: Foreign Key (references User.userId)
-   - `createdAt`: Timestamp
+   - `property_id`: Primary Key, UUID
+   - `host_id`: Foreign Key (references User.user_id), NOT NULL
+   - `name`: String, NOT NULL
+   - `description`: Text, NOT NULL
+   - `location`: String, NOT NULL
+   - `pricepernight`: Decimal, NOT NULL
+   - `created_at`: Timestamp, DEFAULT CURRENT_TIMESTAMP
+   - `updated_at`: Timestamp, ON UPDATE CURRENT_TIMESTAMP
 
 3. **Booking**
-   - `bookingId`: Primary Key
-   - `guestId`: Foreign Key (references User.userId)
-   - `propertyId`: Foreign Key (references Property.propertyId)
-   - `checkInDate`: Date
-   - `checkOutDate`: Date
-   - `status`: Enum (Confirmed, Canceled)
-   - `createdAt`: Timestamp
+   - `booking_id`: Primary Key, UUID
+   - `property_id`: Foreign Key (references Property.property_id), NOT NULL
+   - `user_id`: Foreign Key (references User.user_id), NOT NULL
+   - `start_date`: Date, NOT NULL
+   - `end_date`: Date, NOT NULL
+   - `total_price`: Decimal, NOT NULL
+   - `status`: Enum (pending, confirmed, canceled), NOT NULL
+   - `created_at`: Timestamp, DEFAULT CURRENT_TIMESTAMP
 
 4. **Payment**
-   - `paymentId`: Primary Key
-   - `bookingId`: Foreign Key (references Booking.bookingId)
-   - `amount`: Decimal
-   - `status`: Enum (Paid, Failed)
-   - `paymentDate`: Timestamp
+   - `payment_id`: Primary Key, UUID
+   - `booking_id`: Foreign Key (references Booking.booking_id), NOT NULL
+   - `amount`: Decimal, NOT NULL
+   - `payment_date`: Timestamp, DEFAULT CURRENT_TIMESTAMP
+   - `payment_method`: Enum (credit_card, paypal, stripe), NOT NULL
+
+5. **Review**
+   - `review_id`: Primary Key, UUID
+   - `property_id`: Foreign Key (references Property.property_id), NOT NULL
+   - `user_id`: Foreign Key (references User.user_id), NOT NULL
+   - `rating`: Integer (1-5), NOT NULL
+   - `comment`: Text, NOT NULL
+   - `created_at`: Timestamp, DEFAULT CURRENT_TIMESTAMP
+
+6. **Message**
+   - `message_id`: Primary Key, UUID
+   - `sender_id`: Foreign Key (references User.user_id), NOT NULL
+   - `recipient_id`: Foreign Key (references User.user_id), NOT NULL
+   - `message_body`: Text, NOT NULL
+   - `sent_at`: Timestamp, DEFAULT CURRENT_TIMESTAMP
 
 ## Relationships
 
@@ -41,6 +60,8 @@
 - A **User** (Guest) can make multiple **Bookings** (1..*).
 - A **Property** can have multiple **Bookings** (1..*).
 - A **Booking** has one associated **Payment** (1..1).
+- A **Property** can have multiple **Reviews** (1..*).
+- A **User** can send and receive multiple **Messages** (1..*).
 
 ## ER Diagram
 
