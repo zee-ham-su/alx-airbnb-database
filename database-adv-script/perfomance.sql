@@ -99,6 +99,11 @@ LEFT JOIN
     payment pay ON b.booking_id = pay.booking_id
 WHERE 
     b.start_date >= CURRENT_DATE - INTERVAL '1 year'
+    AND b.property_id IS NULL
+    AND b.property_id NOT IN (
+        SELECT property_id FROM booking
+        WHERE (start_date <= '2023-07-15' AND end_date >= '2023-07-10')
+    )
 ORDER BY 
     b.start_date DESC
 LIMIT 100;
